@@ -1,11 +1,12 @@
 use actix_web::{web, App, HttpResponse, HttpServer};
-use serd::Deserialize;
+use serde::Deserialize;
 
 #[actix_web::main]
 async fn main() {
     let server = HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(get_index))
+            .route("/gcd", web::post().to(post_gcd))
     });
 
     println!("Serving on http://localhost:3000...");
@@ -54,4 +55,17 @@ async fn post_gcd(form: web::Form<GcdParameters>) -> HttpResponse {
     HttpResponse::Ok()
         .content_type("text/html")
         .body(response)
+}
+
+fn gcd(mut n: u64, mut m: u64) -> u64 {
+    assert!(n != 0 && m != 0);
+    while m!= 0 {
+        if m < n {
+            let t = m;
+            m = n;
+            n = t;
+        }
+        m = m % n;
+    }
+    n
 }
